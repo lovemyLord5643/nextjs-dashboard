@@ -36,7 +36,6 @@ export type State = {
 };
 
 export async function createInvoice(
-  id: string,
   prevState: State,
   formData: FormData,
 ) {
@@ -81,8 +80,8 @@ export async function createInvoice(
 }
 
 export async function updateInvoice(
-  prevState: State,
   id: string,
+  prevState: State,
   formData: FormData,
 ) {
   const validatedFields = UpdateInvoice.safeParse({
