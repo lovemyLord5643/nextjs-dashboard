@@ -35,7 +35,11 @@ export type State = {
   message?: string | null;
 };
 
-export async function createInvoice(prevState:State,formData: FormData) {
+export async function createInvoice(
+  id: string,
+  prevState: State,
+  formData: FormData,
+) {
   // validate form using Zod
   const validatedFields = CreateInvoice.safeParse({
     customerId: formData.get('customerId'),
@@ -44,17 +48,17 @@ export async function createInvoice(prevState:State,formData: FormData) {
   });
 
   // if form validation fails, return errors early.Otherwise, continue
-  if (!validatedFields.success){
+  if (!validatedFields.success) {
     // https://zod.dev/ERROR_HANDLING?id=flattening-errors
     // console.log(validatedFields.error.flatten())
     return {
-      errors:validatedFields.error.flatten().fieldErrors,
-      message:'Missing fields.Failed to create invoice. '
-    }
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing fields.Failed to create invoice. ',
+    };
   }
 
   // Prepare data for insertion into the database
-  const {customerId,amount,status} = validatedFields.data
+  const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
   const date = new Date().toISOString().split('T')[0];
 
@@ -76,7 +80,11 @@ export async function createInvoice(prevState:State,formData: FormData) {
   redirect('/dashboard/invoices');
 }
 
-export async function updateInvoice(prevState:State,id: string, formData: FormData) {
+export async function updateInvoice(
+  prevState: State,
+  id: string,
+  formData: FormData,
+) {
   const validatedFields = UpdateInvoice.safeParse({
     customerId: formData.get('customerId'),
     amount: formData.get('amount'),
@@ -85,11 +93,11 @@ export async function updateInvoice(prevState:State,id: string, formData: FormDa
 
   if (!validatedFields.success) {
     return {
-      errors:validatedFields.error.flatten().fieldErrors,
-      message:"Failed to update the invoice"
-    }
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Failed to update the invoice',
+    };
   }
-  const {customerId,amount,status} = validatedFields.data
+  const { customerId, amount, status } = validatedFields.data;
   const amountInCents = amount * 100;
 
   try {
@@ -106,7 +114,6 @@ export async function updateInvoice(prevState:State,id: string, formData: FormDa
 }
 
 export async function deleteInvoice(id: string) {
-
   try {
     await sql`DELETE FROM invoices WHERE id = ${id}`;
   } catch (error) {
